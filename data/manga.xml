@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MangaCollection>
+  <Manga id="1">
+    <Title>Demon Slayer</Title>
+    <Author>Koyoharu Gotouge</Author>
+    <Genre>Action</Genre>
+    <Price>299.00</Price>
+    <Stock>13</Stock>
+    <Volume>1</Volume>
+    <Description>Tanjiro Kamado sets off on a journey to find a cure for his sister Nezuko, who has been turned into a demon.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/0/09/Demon_Slayer_-_Kimetsu_no_Yaiba%2C_volume_1.jpg</Cover>
+  </Manga>
+  <Manga id="2">
+    <Title>Attack on Titan</Title>
+    <Author>Hajime Isayama</Author>
+    <Genre>Dark Fantasy</Genre>
+    <Price>320.00</Price>
+    <Stock>10</Stock>
+    <Volume>1</Volume>
+    <Description>Humanity lives inside cities surrounded by enormous walls protecting them from Titans — gigantic humanoid creatures.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/d/d6/Shingeki_no_Kyojin_manga_volume_1.jpg</Cover>
+  </Manga>
+  <Manga id="3">
+    <Title>One Piece</Title>
+    <Author>Eiichiro Oda</Author>
+    <Genre>Adventure</Genre>
+    <Price>280.00</Price>
+    <Stock>20</Stock>
+    <Volume>1</Volume>
+    <Description>Monkey D. Luffy sets out to become the King of the Pirates and find the legendary treasure called the One Piece.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/9/90/One_Piece%2C_Volume_61_Cover_%28Japanese%29.jpg</Cover>
+  </Manga>
+  <Manga id="4">
+    <Title>Jujutsu Kaisen</Title>
+    <Author>Gege Akutami</Author>
+    <Genre>Supernatural</Genre>
+    <Price>310.00</Price>
+    <Stock>7</Stock>
+    <Volume>1</Volume>
+    <Description>Yuji Itadori joins a secret organization of Jujutsu Sorcerers to kill a powerful Curse named Ryomen Sukuna.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/4/46/Jujutsu_kaisen.jpg</Cover>
+  </Manga>
+  <Manga id="5">
+    <Title>My Hero Academia</Title>
+    <Author>Kohei Horikoshi</Author>
+    <Genre>Superhero</Genre>
+    <Price>290.00</Price>
+    <Stock>12</Stock>
+    <Volume>1</Volume>
+    <Description>In a world where most people have superpowers, Izuku Midoriya dreams of becoming a hero without having any powers.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/5/5a/Boku_no_Hero_Academia_Volume_1.png</Cover>
+  </Manga>
+  <Manga id="6">
+    <Title>Naruto</Title>
+    <Author>Masashi Kishimoto</Author>
+    <Genre>Action</Genre>
+    <Price>270.00</Price>
+    <Stock>25</Stock>
+    <Volume>1</Volume>
+    <Description>Naruto Uzumaki, a young ninja who seeks recognition from his peers and dreams of becoming the Hokage.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg</Cover>
+  </Manga>
+  <Manga id="7">
+    <Title>Chainsaw Man</Title>
+    <Author>Tatsuki Fujimoto</Author>
+    <Genre>Action</Genre>
+    <Price>315.00</Price>
+    <Stock>6</Stock>
+    <Volume>1</Volume>
+    <Description>Denji merges with his chainsaw devil dog.</Description>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/2/24/Chainsawman.jpg</Cover>
+  </Manga>
+  <Manga id="8">
+    <Title>You and I are Polar Opposites</Title>
+    <Author>Kōcha Agasawa</Author>
+    <Genre>Romance</Genre>
+    <Volume>1</Volume>
+    <Price>299</Price>
+    <Stock>10</Stock>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/7/7f/You_and_I_Are_Polar_Opposites_vol._1_cover.jpg</Cover>
+    <Description>Miyu Suzuki and Yusuke Tani are two high school students who are polar opposites of each other—Suzuki is an energetic and outgoing girl who tends to follow the crowd, even when she does not feel like doing so, while Tani is a quiet and introverted boy who bluntly speaks his mind. Because of this, Suzuki has fallen head over heels in love with Tani, but is unable to really make her feelings known to him, and is unaware that Tani also has a crush on her. After she confesses her love to him, he reciprocates and the story follows Suzuki and Tani in their developing relationship, as well as their friends' issues.</Description>
+  </Manga>
+  <Manga id="9">
+    <Title>Gachiakuta</Title>
+    <Author>Kei Urana</Author>
+    <Genre>Action</Genre>
+    <Volume>1</Volume>
+    <Price>599</Price>
+    <Stock>10</Stock>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/8/80/Gachiakuta_vol_1.png</Cover>
+    <Description>Gachiakuta takes place in a dystopian world where there exists a floating country-sized structure known as the Sphere (天界, Tenkai), which runs on a social caste system that divides the rich and wealthy society from the poor "tribesfolk" living around the outer perimeter—descended from notorious criminals and exiled by the upper-class—by way of a heavily guarded wall. Both sides of the caste dump their trash and unwanted waste, as well as people convicted of any crime, down the "Pit", a never-ending expanses below the Sphere in which the Spherites (天界人, Tenkai Jin)—the inhabitants of the Sphere—deemed inhospitable to all forms of life.</Description>
+  </Manga>
+  <Manga id="10">
+    <Title>Blue Lock</Title>
+    <Author>Muneyuki Kaneshiro</Author>
+    <Genre>Sports</Genre>
+    <Volume>1</Volume>
+    <Price>499</Price>
+    <Stock>8</Stock>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/c/c6/Blue_Lock_manga_volume_1.png</Cover>
+    <Description>The Japan national team finished 16th in the 2018 FIFA World Cup. The Japan Football Union hires the football enigma Jinpachi Ego. His masterplan to lead Japan to stardom is Blue Lock, a training regimen designed to create the world's greatest egotistic striker. Those who fail Blue Lock will never again be permitted to represent Japan. Yoichi Isagi, an unknown high school football player who is conflicted about his playing style, decides to join the program competing against 299 other players to become the best striker in the world.</Description>
+  </Manga>
+  <Manga id="11">
+    <Title>Bleach</Title>
+    <Author>Tite Kubo</Author>
+    <Genre>Supernatural</Genre>
+    <Volume>1</Volume>
+    <Price>399</Price>
+    <Stock>9</Stock>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/3/3f/Bleach_%28manga%29_1.png</Cover>
+    <Description>Ichigo Kurosaki is a teenager from Karakura Town who possesses the rare ability to perceive spirits. This gift leads him to encounter Rukia Kuchiki, a warrior from another world who is hunting a Hollow—a monstrous lost soul that preys on both the living and the dead. Rukia serves among the Soul Reapers (死神, Shinigami; lit. 'Death Gods'), an ancient order tasked with maintaining the balance between worlds. These guardians ferry departed souls to the Soul Society (尸魂界ソウル・ソサエティ, Sōru Sosaeti) while protecting humanity from Hollows.</Description>
+  </Manga>
+  <Manga id="12">
+    <Title>Black Clover</Title>
+    <Author>Yūki Tabata</Author>
+    <Genre>Action</Genre>
+    <Volume>1</Volume>
+    <Price>399</Price>
+    <Stock>11</Stock>
+    <Cover>https://upload.wikimedia.org/wikipedia/en/6/69/Black_Clover%2C_volume_1.jpg</Cover>
+    <Description>The series focuses on Asta, a young orphan who is left to be raised in an orphanage in a rural village alongside his fellow orphan, Yuno. While everyone is born with the ability to utilize mana in the form of magical power, Asta, was born without mana and thus has no way to use magic, instead he focuses on physical strength. Conversely, Yuno was born as a prodigy with immense magical power and the talent to control wind magic.</Description>
+  </Manga>
+</MangaCollection>

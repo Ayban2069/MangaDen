@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MangaDen — Your Manga Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #16161a;
+    --card: #1e1e24;
+    --border: #2a2a35;
+    --accent: #e63946;
+    --accent2: #ff6b35;
+    --gold: #ffd166;
+    --text: #f0f0f5;
+    --muted: #7a7a90;
+    --success: #06d6a0;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; min-height: 100vh; }
+
+  /* ── Navbar ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; color: var(--accent); }
+  .logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 0.5rem; }
+  .nav-btn {
+    background: none; border: none; color: var(--muted); font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem; font-weight: 700; padding: 0.5rem 1rem; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .nav-btn:hover, .nav-btn.active { background: var(--accent); color: white; }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, #1a0a0f 0%, #0d0d0f 50%, #0a0a1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: 'MANGA'; position: absolute; font-family: 'Bebas Neue', sans-serif;
+    font-size: 20rem; color: rgba(230,57,70,0.04); top: 50%; left: 50%;
+    transform: translate(-50%,-50%); pointer-events: none; white-space: nowrap;
+  }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; letter-spacing: 4px; line-height: 1; }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); margin-top: 0.75rem; font-size: 1.1rem; }
+  .search-bar {
+    display: flex; gap: 0.5rem; max-width: 480px; margin: 1.5rem auto 0;
+  }
+  .search-bar input {
+    flex: 1; background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 0.75rem 1rem; border-radius: 10px; font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar button {
+    background: var(--accent); color: white; border: none; padding: 0.75rem 1.5rem;
+    border-radius: 10px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif;
+    transition: background 0.2s;
+  }
+  .search-bar button:hover { background: #c1121f; }
+
+  /* ── Genre filter ── */
+  .filter-bar {
+    display: flex; gap: 0.5rem; padding: 1.25rem 2rem; overflow-x: auto;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .genre-pill {
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .genre-pill:hover, .genre-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* ── Main layout ── */
+  main { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+  /* ── Section headings ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;
+  }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; }
+  .section-title span { color: var(--accent); }
+
+  /* ── Manga grid ── */
+  .manga-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem;
+  }
+  .manga-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; transition: transform 0.2s, border-color 0.2s; cursor: pointer; position: relative;
+  }
+  .manga-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .manga-cover {
+    width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; background: var(--border);
+  }
+  .manga-cover-placeholder {
+    width: 100%; aspect-ratio: 2/3; background: linear-gradient(135deg, #1e1e2e, #2a1a2e);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; color: var(--muted); text-align: center; padding: 1rem;
+  }
+  .manga-info { padding: 0.75rem; }
+  .manga-title { font-weight: 800; font-size: 0.92rem; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .manga-author { color: var(--muted); font-size: 0.78rem; margin-bottom: 0.5rem; }
+  .manga-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
+  .manga-price { color: var(--gold); font-weight: 800; font-size: 0.95rem; }
+  .genre-badge {
+    font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 99px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .stock-low { position: absolute; top: 8px; right: 8px; background: var(--accent); color: white;
+    font-size: 0.65rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 99px; text-transform: uppercase; }
+  .out-of-stock { opacity: 0.5; }
+  .out-badge { position: absolute; top: 8px; right: 8px; background: #333; color: var(--muted);
+    font-size: 0.65rem; font-weight: 800; padding: 0.2rem 0.5rem; border-radius: 99px; }
+
+  /* Genre badge colors */
+  .g-action      { background: rgba(230,57,70,0.15);  color: #e63946; }
+  .g-adventure   { background: rgba(255,107,53,0.15); color: #ff6b35; }
+  .g-dark        { background: rgba(100,60,120,0.2);  color: #b07fd4; }
+  .g-supernatural{ background: rgba(6,214,160,0.15);  color: #06d6a0; }
+  .g-superhero   { background: rgba(255,209,102,0.15);color: #ffd166; }
+  .g-default     { background: rgba(120,120,150,0.15);color: #9999bb; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+    transform: scale(0.95); transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: scale(1); }
+  .modal-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 1px; }
+  .modal-close {
+    background: none; border: none; color: var(--muted); font-size: 1.5rem;
+    cursor: pointer; line-height: 1; transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--accent); }
+  .modal-body { padding: 1.5rem; }
+
+  /* Detail modal */
+  .detail-layout { display: flex; gap: 1.5rem; }
+  .detail-cover { width: 160px; flex-shrink: 0; border-radius: 10px; object-fit: cover; }
+  .detail-cover-ph {
+    width: 160px; flex-shrink: 0; border-radius: 10px; aspect-ratio: 2/3;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--muted); text-align: center; padding: 0.5rem;
+  }
+  .detail-info { flex: 1; }
+  .detail-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1; margin-bottom: 0.25rem; }
+  .detail-author { color: var(--muted); margin-bottom: 0.75rem; }
+  .detail-desc { font-size: 0.9rem; line-height: 1.6; color: #ccc; margin-bottom: 1rem; }
+  .detail-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+  .meta-item label { display: block; font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .meta-item span { font-weight: 800; font-size: 1rem; }
+  .buy-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+  .qty-input {
+    width: 70px; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 0.6rem 0.75rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; text-align: center;
+  }
+  .buyer-input {
+    flex: 1; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 0.6rem 0.75rem; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 0.95rem;
+  }
+  .btn-buy {
+    background: var(--accent); color: white; border: none; padding: 0.65rem 1.5rem;
+    border-radius: 8px; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+    font-family: 'Nunito', sans-serif; transition: background 0.2s; white-space: nowrap;
+  }
+  .btn-buy:hover { background: #c1121f; }
+  .btn-buy:disabled { background: #444; cursor: not-allowed; }
+
+  /* ── Form ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1/-1; }
+  .form-group label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 0.65rem 0.75rem; border-radius: 8px; font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group select option { background: var(--card); }
+  .btn-submit {
+    width: 100%; background: var(--accent); color: white; border: none;
+    padding: 0.8rem; border-radius: 10px; font-weight: 800; font-size: 1rem;
+    cursor: pointer; font-family: 'Nunito', sans-serif; margin-top: 0.5rem; transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #c1121f; }
+
+  /* ── Admin table ── */
+  .admin-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .admin-table th {
+    text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--border);
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted);
+  }
+  .admin-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .btn-edit {
+    background: rgba(255,209,102,0.15); color: var(--gold); border: 1px solid rgba(255,209,102,0.3);
+    padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+  }
+  .btn-edit:hover { background: rgba(255,209,102,0.3); }
+  .btn-delete {
+    background: rgba(230,57,70,0.15); color: var(--accent); border: 1px solid rgba(230,57,70,0.3);
+    padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s; margin-left: 0.4rem;
+  }
+  .btn-delete:hover { background: rgba(230,57,70,0.3); }
+  .btn-add {
+    background: var(--accent); color: white; border: none; padding: 0.6rem 1.25rem;
+    border-radius: 8px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; font-size: 0.9rem;
+  }
+
+  /* ── Toast ── */
+  #toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; display: flex; flex-direction: column; gap: 0.5rem; }
+  .toast {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--success);
+    padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-weight: 700;
+    min-width: 240px; animation: slideIn 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.error { border-left-color: var(--accent); }
+  @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+  /* ── Order confirmation ── */
+  .order-confirm { text-align: center; padding: 1rem 0; }
+  .order-confirm .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+  .order-confirm h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--success); margin-bottom: 0.5rem; }
+  .confirm-details { background: var(--surface); border-radius: 10px; padding: 1rem; margin-top: 1rem; text-align: left; }
+  .confirm-row { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  .confirm-row:last-child { border-bottom: none; }
+  .confirm-row span:first-child { color: var(--muted); }
+  .confirm-row span:last-child { font-weight: 700; }
+  .txn-id { color: var(--gold); }
+
+  /* ── Empty state ── */
+  .empty { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+  .empty .icon { font-size: 3rem; margin-bottom: 1rem; }
+  .empty p { font-size: 1.1rem; }
+
+  /* ── Loading ── */
+  .loading { text-align: center; padding: 3rem; color: var(--muted); }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 1rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Page sections ── */
+  .page { display: none; }
+  .page.active { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Manga<span>Den</span></div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('store')">🏪 Store</button>
+    <button class="nav-btn" onclick="showPage('admin')">⚙️ Admin</button>
+  </div>
+</nav>
+
+<!-- ── STORE PAGE ── -->
+<div id="page-store" class="page active">
+  <div class="hero">
+    <h1>YOUR MANGA<br/><span>COLLECTION</span> STARTS HERE</h1>
+    <p>Browse, buy, and build your shelf — backed by XML-powered services</p>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search title or author..." oninput="filterManga()"/>
+      <button onclick="filterManga()">Search</button>
+    </div>
+  </div>
+
+  <div class="filter-bar" id="genre-filter">
+    <button class="genre-pill active" onclick="setGenreFilter('All', this)">All</button>
+  </div>
+
+  <main>
+    <div class="section-header">
+      <div class="section-title">Available <span>Manga</span></div>
+      <span id="manga-count" style="color:var(--muted);font-size:0.85rem;"></span>
+    </div>
+    <div id="manga-grid" class="manga-grid">
+      <div class="loading"><div class="spinner"></div>Loading manga...</div>
+    </div>
+  </main>
+</div>
+
+<!-- ── ADMIN PAGE ── -->
+<div id="page-admin" class="page">
+  <main>
+    <div class="section-header" style="margin-top:1rem;">
+      <div class="section-title">Admin <span>Panel</span></div>
+      <button class="btn-add" onclick="openAddModal()">+ Add Manga</button>
+    </div>
+    <div id="admin-table-wrap">
+      <div class="loading"><div class="spinner"></div>Loading...</div>
+    </div>
+  </main>
+</div>
+
+<!-- ── DETAIL / BUY MODAL ── -->
+<div class="modal-overlay" id="modal-detail" onclick="closeModal('modal-detail', event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="detail-modal-title">Manga Detail</span>
+      <button class="modal-close" onclick="closeModalDirect('modal-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
+  </div>
+</div>
+
+<!-- ── ORDER RESULT MODAL ── -->
+<div class="modal-overlay" id="modal-order-result" onclick="closeModal('modal-order-result', event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Order Result</span>
+      <button class="modal-close" onclick="closeModalDirect('modal-order-result')">✕</button>
+    </div>
+    <div class="modal-body" id="order-result-body"></div>
+  </div>
+</div>
+
+<!-- ── ADD / EDIT MODAL ── -->
+<div class="modal-overlay" id="modal-form" onclick="closeModal('modal-form', event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="form-modal-title">Add Manga</span>
+      <button class="modal-close" onclick="closeModalDirect('modal-form')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>Title *</label><input id="f-title" placeholder="e.g. Demon Slayer"/></div>
+        <div class="form-group"><label>Author *</label><input id="f-author" placeholder="e.g. Koyoharu Gotouge"/></div>
+        <div class="form-group">
+          <label>Genre *</label>
+          <select id="f-genre">
+            <option>Action</option><option>Adventure</option><option>Dark Fantasy</option>
+            <option>Supernatural</option><option>Superhero</option><option>Romance</option>
+            <option>Comedy</option><option>Horror</option><option>Sci-Fi</option><option>Sports</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Volume</label><input id="f-volume" type="number" value="1" min="1"/></div>
+        <div class="form-group"><label>Price (PHP) *</label><input id="f-price" type="number" placeholder="299" min="0" step="0.01"/></div>
+        <div class="form-group"><label>Stock *</label><input id="f-stock" type="number" placeholder="10" min="0"/></div>
+        <div class="form-group full"><label>Cover Image URL</label><input id="f-cover" placeholder="https://..."/></div>
+        <div class="form-group full"><label>Description</label><textarea id="f-desc" placeholder="Brief synopsis..."></textarea></div>
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Save Manga</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+const API = 'http://127.0.0.1:5001';
+const ORDER_API = 'http://127.0.0.1:5000';
+
+let allManga = [];
+let activeGenre = 'All';
+let editingId = null;
+
+// ── XML Helpers ──────────────────────────────────────────────────────────────
+
+function parseXML(text) {
+  return new DOMParser().parseFromString(text, 'application/xml');
+}
+
+function xmlText(el, tag) {
+  const node = el.querySelector(tag);
+  return node ? node.textContent.trim() : '';
+}
+
+function buildXML(tag, fields) {
+  const parts = Object.entries(fields).map(([k,v]) => `<${k}>${escXML(v)}</${k}>`).join('');
+  return `<${tag}>${parts}</${tag}>`;
+}
+
+function escXML(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Data Loading ─────────────────────────────────────────────────────────────
+
+async function loadManga() {
+  try {
+    const res = await fetch(`${API}/manga`);
+    const xml = parseXML(await res.text());
+    allManga = Array.from(xml.querySelectorAll('Manga')).map(m => ({
+      id:     m.getAttribute('id'),
+      title:  xmlText(m,'Title'),
+      author: xmlText(m,'Author'),
+      genre:  xmlText(m,'Genre'),
+      price:  parseFloat(xmlText(m,'Price')) || 0,
+      stock:  parseInt(xmlText(m,'Stock'))   || 0,
+      volume: xmlText(m,'Volume'),
+      desc:   xmlText(m,'Description'),
+      cover:  xmlText(m,'Cover'),
+    }));
+    renderGenreFilter();
+    renderGrid(allManga);
+    return allManga;
+  } catch(e) {
+    document.getElementById('manga-grid').innerHTML =
+      `<div class="empty"><div class="icon">⚠️</div><p>Cannot connect to Inventory Service.<br/>Make sure inventory_service.py is running on port 5001.</p></div>`;
+  }
+}
+
+// ── Genre filter ─────────────────────────────────────────────────────────────
+
+function renderGenreFilter() {
+  const genres = ['All', ...new Set(allManga.map(m => m.genre))];
+  const bar = document.getElementById('genre-filter');
+  bar.innerHTML = genres.map(g =>
+    `<button class="genre-pill${g===activeGenre?' active':''}" onclick="setGenreFilter('${g}', this)">${g}</button>`
+  ).join('');
+}
+
+function setGenreFilter(genre, btn) {
+  activeGenre = genre;
+  document.querySelectorAll('.genre-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  filterManga();
+}
+
+function filterManga() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = allManga.filter(m => {
+    const matchGenre = activeGenre === 'All' || m.genre === activeGenre;
+    const matchSearch = !q || m.title.toLowerCase().includes(q) || m.author.toLowerCase().includes(q);
+    return matchGenre && matchSearch;
+  });
+  renderGrid(filtered);
+}
+
+// ── Genre badge ───────────────────────────────────────────────────────────────
+
+function genreClass(g) {
+  const map = { 'Action':'g-action','Adventure':'g-adventure','Dark Fantasy':'g-dark',
+                'Supernatural':'g-supernatural','Superhero':'g-superhero' };
+  return map[g] || 'g-default';
+}
+
+// ── Grid render ───────────────────────────────────────────────────────────────
+
+function renderGrid(manga) {
+  const grid = document.getElementById('manga-grid');
+  document.getElementById('manga-count').textContent = `${manga.length} title${manga.length!==1?'s':''}`;
+  if (!manga.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="icon">📭</div><p>No manga found.</p></div>`;
+    return;
+  }
+  grid.innerHTML = manga.map(m => {
+    const oos = m.stock === 0;
+    const low = m.stock > 0 && m.stock <= 3;
+    const badge = oos
+      ? `<div class="out-badge">Out of Stock</div>`
+      : low ? `<div class="stock-low">Only ${m.stock} left!</div>` : '';
+    const cover = m.cover
+      ? `<img class="manga-cover" src="${m.cover}" alt="${escXML(m.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <div class="manga-cover-placeholder" style="display:none">${escXML(m.title)}</div>`
+      : `<div class="manga-cover-placeholder">${escXML(m.title)}</div>`;
+    return `
+      <div class="manga-card${oos?' out-of-stock':''}" onclick="openDetail('${m.id}')">
+        ${badge}
+        ${cover}
+        <div class="manga-info">
+          <div class="manga-title">${m.title}</div>
+          <div class="manga-author">${m.author}</div>
+          <div class="manga-footer">
+            <span class="manga-price">₱${m.price.toFixed(2)}</span>
+            <span class="genre-badge ${genreClass(m.genre)}">${m.genre}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Detail modal ─────────────────────────────────────────────────────────────
+
+function openDetail(id) {
+  const m = allManga.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('detail-modal-title').textContent = m.title;
+  const cover = m.cover
+    ? `<img class="detail-cover" src="${m.cover}" alt="${escXML(m.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="detail-cover-ph" style="display:none">${escXML(m.title)}</div>`
+    : `<div class="detail-cover-ph">${escXML(m.title)}</div>`;
+  const stockColor = m.stock === 0 ? 'var(--accent)' : m.stock <= 3 ? 'var(--gold)' : 'var(--success)';
+  document.getElementById('detail-modal-body').innerHTML = `
+    <div class="detail-layout">
+      ${cover}
+      <div class="detail-info">
+        <div class="detail-title">${m.title}</div>
+        <div class="detail-author">by ${m.author} · Vol. ${m.volume||1}</div>
+        <div class="detail-desc">${m.desc || 'No description available.'}</div>
+        <div class="detail-meta">
+          <div class="meta-item"><label>Price</label><span style="color:var(--gold)">₱${m.price.toFixed(2)}</span></div>
+          <div class="meta-item"><label>Stock</label><span style="color:${stockColor}">${m.stock === 0 ? 'Out of Stock' : m.stock + ' available'}</span></div>
+          <div class="meta-item"><label>Genre</label><span class="genre-badge ${genreClass(m.genre)}">${m.genre}</span></div>
+          <div class="meta-item"><label>Volume</label><span>#${m.volume||1}</span></div>
+        </div>
+        <div class="buy-row">
+          <input class="qty-input" type="number" id="buy-qty" value="1" min="1" max="${m.stock}" ${m.stock===0?'disabled':''}/>
+          <input class="buyer-input" type="text" id="buy-name" placeholder="Your name" ${m.stock===0?'disabled':''}/>
+          <button class="btn-buy" onclick="placeOrder('${m.id}')" ${m.stock===0?'disabled':''}>
+            ${m.stock===0?'Sold Out':'Buy Now'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  openModal('modal-detail');
+}
+
+// ── Order ─────────────────────────────────────────────────────────────────────
+
+async function placeOrder(mangaId) {
+  const qty  = parseInt(document.getElementById('buy-qty').value) || 1;
+  const name = document.getElementById('buy-name').value.trim() || 'Guest';
+  const btn  = document.querySelector('.btn-buy');
+  btn.disabled = true; btn.textContent = 'Processing...';
+
+  const xml = buildXML('Order', { MangaID: mangaId, Quantity: qty, Buyer: name });
+  try {
+    const res  = await fetch(`${ORDER_API}/place_order`, {
+      method: 'POST', headers: { 'Content-Type': 'application/xml' }, body: xml
+    });
+    const doc  = parseXML(await res.text());
+    const status = xmlText(doc, 'Status');
+
+    closeModalDirect('modal-detail');
+
+    if (status === 'Success') {
+      document.getElementById('order-result-body').innerHTML = `
+        <div class="order-confirm">
+          <div class="icon">✅</div>
+          <h2>Order Confirmed!</h2>
+          <div class="confirm-details">
+            <div class="confirm-row"><span>Title</span><span>${xmlText(doc,'Title')}</span></div>
+            <div class="confirm-row"><span>Buyer</span><span>${xmlText(doc,'Buyer')}</span></div>
+            <div class="confirm-row"><span>Quantity</span><span>${xmlText(doc,'Quantity')}</span></div>
+            <div class="confirm-row"><span>Total Charged</span><span style="color:var(--gold)">${xmlText(doc,'TotalCharged')}</span></div>
+            <div class="confirm-row"><span>Remaining Stock</span><span>${xmlText(doc,'RemainingStock')}</span></div>
+            <div class="confirm-row"><span>Transaction ID</span><span class="txn-id">${xmlText(doc,'TransactionID')}</span></div>
+          </div>
+        </div>`;
+      openModal('modal-order-result');
+      toast('Order placed successfully! 🎉');
+      loadManga();
+    } else {
+      const msg = xmlText(doc,'Message') || 'Order failed.';
+      toast(msg, true);
+    }
+  } catch(e) {
+    toast('Cannot connect to Order Service (port 5000).', true);
+  }
+  btn.disabled = false; btn.textContent = 'Buy Now';
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+async function loadAdminTable() {
+  const wrap = document.getElementById('admin-table-wrap');
+  wrap.innerHTML = `<div class="loading"><div class="spinner"></div>Loading...</div>`;
+  const data = await loadManga();
+  if (!data || !data.length) { wrap.innerHTML = `<p style="color:var(--muted);padding:2rem">No data.</p>`; return; }
+
+  wrap.innerHTML = `
+    <table class="admin-table">
+      <thead><tr>
+        <th>ID</th><th>Title</th><th>Author</th><th>Genre</th>
+        <th>Price</th><th>Stock</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+      ${data.map(m => `
+        <tr>
+          <td style="color:var(--muted)">#${m.id}</td>
+          <td><strong>${m.title}</strong></td>
+          <td style="color:var(--muted)">${m.author}</td>
+          <td><span class="genre-badge ${genreClass(m.genre)}">${m.genre}</span></td>
+          <td style="color:var(--gold)">₱${m.price.toFixed(2)}</td>
+          <td style="color:${m.stock<=3?'var(--accent)':'inherit'}">${m.stock}</td>
+          <td>
+            <button class="btn-edit" onclick="openEditModal('${m.id}')">Edit</button>
+            <button class="btn-delete" onclick="deleteManga('${m.id}', '${escXML(m.title)}')">Delete</button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function openAddModal() {
+  editingId = null;
+  document.getElementById('form-modal-title').textContent = 'Add Manga';
+  ['title','author','volume','price','stock','cover','desc'].forEach(f =>
+    document.getElementById('f-'+f).value = f==='volume'?'1':'');
+  document.getElementById('f-genre').value = 'Action';
+  openModal('modal-form');
+}
+
+function openEditModal(id) {
+  const m = allManga.find(x => x.id === id);
+  if (!m) return;
+  editingId = id;
+  document.getElementById('form-modal-title').textContent = 'Edit Manga';
+  document.getElementById('f-title').value  = m.title;
+  document.getElementById('f-author').value = m.author;
+  document.getElementById('f-genre').value  = m.genre;
+  document.getElementById('f-volume').value = m.volume || 1;
+  document.getElementById('f-price').value  = m.price;
+  document.getElementById('f-stock').value  = m.stock;
+  document.getElementById('f-cover').value  = m.cover;
+  document.getElementById('f-desc').value   = m.desc;
+  openModal('modal-form');
+}
+
+async function submitForm() {
+  const title  = document.getElementById('f-title').value.trim();
+  const author = document.getElementById('f-author').value.trim();
+  const price  = document.getElementById('f-price').value.trim();
+  const stock  = document.getElementById('f-stock').value.trim();
+  if (!title || !author || !price || !stock) { toast('Please fill in required fields.', true); return; }
+
+  const fields = {
+    Title: title, Author: author,
+    Genre: document.getElementById('f-genre').value,
+    Volume: document.getElementById('f-volume').value || 1,
+    Price: price, Stock: stock,
+    Cover: document.getElementById('f-cover').value,
+    Description: document.getElementById('f-desc').value,
+  };
+
+  const xml = buildXML('Manga', fields);
+  const btn = document.querySelector('.btn-submit');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    let res;
+    if (editingId) {
+      res = await fetch(`${API}/manga/${editingId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/xml' }, body: xml
+      });
+    } else {
+      res = await fetch(`${API}/manga`, {
+        method: 'POST', headers: { 'Content-Type': 'application/xml' }, body: xml
+      });
+    }
+    const doc = parseXML(await res.text());
+    const status = xmlText(doc, 'Status');
+    if (status === 'Success') {
+      toast(editingId ? 'Manga updated!' : 'Manga added!');
+      closeModalDirect('modal-form');
+      await loadAdminTable();
+    } else {
+      toast('Save failed.', true);
+    }
+  } catch(e) {
+    toast('Cannot connect to Inventory Service.', true);
+  }
+  btn.disabled = false; btn.textContent = 'Save Manga';
+}
+
+async function deleteManga(id, title) {
+  if (!confirm(`Delete "${title}"?`)) return;
+  try {
+    const res = await fetch(`${API}/manga/${id}`, { method: 'DELETE' });
+    const doc = parseXML(await res.text());
+    if (xmlText(doc,'Status') === 'Success') {
+      toast(`"${title}" deleted.`);
+      await loadAdminTable();
+    } else {
+      toast('Delete failed.', true);
+    }
+  } catch(e) {
+    toast('Cannot connect to Inventory Service.', true);
+  }
+}
+
+// ── Modals ────────────────────────────────────────────────────────────────────
+
+function openModal(id)      { document.getElementById(id).classList.add('open'); }
+function closeModalDirect(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id, e)  { if (e.target === document.getElementById(id)) closeModalDirect(id); }
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+function toast(msg, isError=false) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (isError?' error':'');
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => { el.style.animation='slideOut 0.3s ease forwards'; setTimeout(()=>el.remove(),300); }, 3000);
+}
+
+// ── Page switching ────────────────────────────────────────────────────────────
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (page === 'admin') loadAdminTable();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadManga();
+</script>
+</body>
+</html>
