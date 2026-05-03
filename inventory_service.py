@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, Response, jsonify
 import xml.etree.ElementTree as ET
 from flask_cors import CORS
@@ -190,5 +192,5 @@ def update_stock(manga_id):
     return jsonify({"status": "success"})
 
 if __name__ == '__main__':
-    print("=== MangaDen Inventory Service — port 5001 ===")
-    app.run(port=5001, debug=False)
+    port = int(os.environ.get("PORT", 5001))
+    app.run(host='0.0.0.0', port=port)

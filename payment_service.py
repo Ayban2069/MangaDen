@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import uuid
@@ -40,7 +42,6 @@ def process_payment():
             "message": "Payment error"
         }), 500
 
-
 if __name__ == '__main__':
-    print("=== MangaDen Payment Service — port 5002 ===")
-    app.run(port=5002, debug=False)
+    port = int(os.environ.get("PORT", 5002))
+    app.run(host='0.0.0.0', port=port)
