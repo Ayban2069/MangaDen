@@ -1,12 +1,17 @@
 import os
 
 from flask import Flask, request, Response, jsonify
+from flask import Flask, render_template
 import xml.etree.ElementTree as ET
 from flask_cors import CORS
 import psycopg2
 
 app = Flask(__name__)
 CORS(app)
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 # 🔑 Supabase connection
 def get_conn():
