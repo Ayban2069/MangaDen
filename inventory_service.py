@@ -1,5 +1,4 @@
-
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 import xml.etree.ElementTree as ET
 from flask_cors import CORS
 import psycopg2
@@ -7,23 +6,26 @@ import psycopg2
 app = Flask(__name__)
 CORS(app)
 
-# 🔑 Replace with YOUR Supabase credentials
+# 🔑 Supabase connection
 def get_conn():
     return psycopg2.connect(
         host="aws-1-ap-south-1.pooler.supabase.com",
         database="postgres",
         user="postgres.ttnaunhyqdtwrordkfft",
         password="rikajin1108",
-        port=5432
+        port=5432  
     )
 
+# ── XML RESPONSE HELPER (used by other services) ─────────────
 def xresp(root, status=200):
     ET.indent(root, space='  ')
-    return Response(ET.tostring(root, encoding='unicode'),
-                    mimetype='application/xml',
-                    status=status)
+    return Response(
+        ET.tostring(root, encoding='unicode'),
+        mimetype='application/xml',
+        status=status
+    )
 
-# ── GET ALL MANGA ─────────────────────────────────────────────
+# ── GET ALL MANGA (JSON for frontend) ───────────────────────
 @app.route('/manga', methods=['GET'])
 def list_manga():
     conn = get_conn()
@@ -32,117 +34,88 @@ def list_manga():
     cur.execute("SELECT * FROM manga ORDER BY id")
     rows = cur.fetchall()
 
-    root = ET.Element('MangaCollection')
-
+    manga_list = []
     for r in rows:
-        m = ET.SubElement(root, 'Manga', id=str(r[0]))
-        ET.SubElement(m, 'Title').text = r[1]
-        ET.SubElement(m, 'Author').text = r[2]
-        ET.SubElement(m, 'Genre').text = r[3]
-        ET.SubElement(m, 'Price').text = str(r[4])
-        ET.SubElement(m, 'Stock').text = str(r[5])
-        ET.SubElement(m, 'Volume').text = str(r[6])
-        ET.SubElement(m, 'Description').text = r[7]
-        ET.SubElement(m, 'Cover').text = r[8]
+        manga_list.append({
+            "id": r[0],
+            "title": r[1],
+            "author": r[2],
+            "genre": r[3],
+            "price": float(r[4]),
+            "stock": r[5],
+            "volume": r[6],
+            "description": r[7],
+            "cover_url": r[8]
+        })
 
     conn.close()
-    return xresp(root)
+    return jsonify({"manga": manga_list})
 
-# ── GET SINGLE ───────────────────────────────────────────────
-@app.route('/manga/<manga_id>', methods=['GET'])
-def get_manga(manga_id):
-    conn = get_conn()
-    cur = conn.cursor()
-
-    cur.execute("SELECT * FROM manga WHERE id=%s", (manga_id,))
-    r = cur.fetchone()
-
-    if not r:
-        conn.close()
-        err = ET.Element('Error')
-        err.text = "Not found"
-        return xresp(err, 404)
-
-    m = ET.Element('Manga', id=str(r[0]))
-    ET.SubElement(m, 'Title').text = r[1]
-    ET.SubElement(m, 'Author').text = r[2]
-    ET.SubElement(m, 'Genre').text = r[3]
-    ET.SubElement(m, 'Price').text = str(r[4])
-    ET.SubElement(m, 'Stock').text = str(r[5])
-    ET.SubElement(m, 'Volume').text = str(r[6])
-    ET.SubElement(m, 'Description').text = r[7]
-    ET.SubElement(m, 'Cover').text = r[8]
-
-    conn.close()
-    return xresp(m)
-
-# ── ADD MANGA ────────────────────────────────────────────────
+# ── ADD MANGA (XML) ─────────────────────────────────────────
 @app.route('/manga', methods=['POST'])
 def add_manga():
+    data = request.json
+
     try:
-        root = ET.fromstring(request.data)
+        title = data.get('title')
+        author = data.get('author')
+        genre = data.get('genre')
+        price = float(data.get('price', 0))
+        stock = int(data.get('stock', 0))
+        volume = int(data.get('volume', 1))
+        description = data.get('description')
+        cover = data.get('cover_url')
+
+        conn = get_conn()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO manga (title, author, genre, price, stock, volume, description, cover)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+            RETURNING id
+        """, (title, author, genre, price, stock, volume, description, cover))
+
+        new_id = cur.fetchone()[0]
+        conn.commit()
+        conn.close()
+
+        return jsonify({"status": "success", "id": new_id})
+
     except Exception as e:
-        print("XML Error:", e)
-        return xresp(ET.Element('Error'), 400)
+        print("ERROR:", e)
+        return jsonify({"status": "failed"}), 400
 
-    # Extract safely
-    title = root.findtext('Title', '').strip()
-    author = root.findtext('Author', '').strip()
-    genre = root.findtext('Genre', '').strip()
-    price = root.findtext('Price', '0').strip()
-    stock = root.findtext('Stock', '0').strip()
-    volume = root.findtext('Volume', '1').strip()
-    description = root.findtext('Description', '').strip()
-    cover = root.findtext('Cover', '').strip()
-
-    try:
-        price = float(price)
-        stock = int(stock)
-        volume = int(volume)
-    except ValueError:
-        return xresp(ET.Element('Error'), 400)
+# ── UPDATE ─────────────────────────────────────────────────
+@app.route('/manga/<manga_id>', methods=['PUT'])
+def update_manga(manga_id):
+    data = request.json
 
     conn = get_conn()
     cur = conn.cursor()
 
     cur.execute("""
-        INSERT INTO manga (title, author, genre, price, stock, volume, description, cover)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-        RETURNING id
-    """, (title, author, genre, price, stock, volume, description, cover))
-
-    new_id = cur.fetchone()[0]
-    conn.commit()
-    conn.close()
-
-    r = ET.Element('AddResponse')
-    ET.SubElement(r, 'Status').text = 'Success'
-    ET.SubElement(r, 'AssignedID').text = str(new_id)
-
-    return xresp(r, 201)
-
-# ── UPDATE ───────────────────────────────────────────────────
-@app.route('/manga/<manga_id>', methods=['PUT'])
-def update_manga(manga_id):
-    root = ET.fromstring(request.data)
-
-    conn = get_conn()
-    cur = conn.cursor()
-
-    for child in root:
-        cur.execute(f"""
-            UPDATE manga SET {child.tag.lower()} = %s
-            WHERE id = %s
-        """, (child.text, manga_id))
+        UPDATE manga SET
+        title=%s, author=%s, genre=%s, price=%s,
+        stock=%s, volume=%s, description=%s, cover=%s
+        WHERE id=%s
+    """, (
+        data.get('title'),
+        data.get('author'),
+        data.get('genre'),
+        data.get('price'),
+        data.get('stock'),
+        data.get('volume'),
+        data.get('description'),
+        data.get('cover_url'),
+        manga_id
+    ))
 
     conn.commit()
     conn.close()
 
-    r = ET.Element('UpdateResponse')
-    ET.SubElement(r, 'Status').text = 'Success'
-    return xresp(r)
+    return jsonify({"status": "success"})
 
-# ── DELETE ───────────────────────────────────────────────────
+# ── DELETE ─────────────────────────────────────────────────
 @app.route('/manga/<manga_id>', methods=['DELETE'])
 def delete_manga(manga_id):
     conn = get_conn()
@@ -154,9 +127,10 @@ def delete_manga(manga_id):
 
     r = ET.Element('DeleteResponse')
     ET.SubElement(r, 'Status').text = 'Success'
+    return jsonify({"status": "success"})
     return xresp(r)
 
-# ── DEDUCT STOCK (used by order service) ─────────────────────
+# ── DEDUCT STOCK (used by order service) ───────────────────
 @app.route('/deduct_stock', methods=['POST'])
 def deduct_stock():
     root = ET.fromstring(request.data)
@@ -197,6 +171,24 @@ def deduct_stock():
     ET.SubElement(r, 'RemainingStock').text = str(stock - qty)
     return xresp(r)
 
+@app.route('/manga/<int:manga_id>/stock', methods=['PUT'])
+def update_stock(manga_id):
+    data = request.json
+    new_stock = int(data.get("stock", 0))
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        "UPDATE manga SET stock=%s WHERE id=%s",
+        (new_stock, manga_id)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "success"})
+
 if __name__ == '__main__':
-    print("=== MangaDen Inventory Service (Supabase) — port 5001 ===")
+    print("=== MangaDen Inventory Service — port 5001 ===")
     app.run(port=5001, debug=False)
