@@ -13,6 +13,10 @@ CORS(app)
 def home():
     return render_template('index.html')
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
 # 🔑 Supabase connection
 def get_conn():
     return psycopg2.connect(
