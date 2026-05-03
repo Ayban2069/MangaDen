@@ -10,7 +10,7 @@ CORS(app)
 
 # 🔗 Services
 INVENTORY_URL = "https://mangaden.onrender.com/"
-PAYMENT_URL   = "http://127.0.0.1:5002"
+PAYMENT_URL   = "https://mangaden-payment.onrender.com"
 
 # 🔑 DB connection
 def get_conn():
