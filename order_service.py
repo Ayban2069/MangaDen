@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 # 🔗 Services
-INVENTORY_URL = "http://127.0.0.1:5001"
+INVENTORY_URL = "https://mangaden.onrender.com/"
 PAYMENT_URL   = "http://127.0.0.1:5002"
 
 # 🔑 DB connection
